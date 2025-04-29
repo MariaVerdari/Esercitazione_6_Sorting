@@ -1,15 +1,14 @@
-#include <cmath> // contiene floor
-#include <iostream>
-#include <numeric> // contiene iota
-#include <iostream>
+#include <cmath>
+#include <iostream> 
+#include <string>
+#include <iostream> 
+#include <numeric>
 #include <sstream>
-#include <chrono> // https://en.cppreference.com/w/cpp/chrono
-
+#include <chrono> 
+#include <iomanip>
 #include "SortingAlgorithm.hpp"
 using namespace std;
 
-// devo FARE MODALITà DEBUG PER PROVARE E RELEASE PER QUANDO PRENDO I TEMPI
-// cmake -S . _-.... TYPE "Release"-aggiungere anche in gitignore
 
 template<typename T>
 string ArrayToString(const vector<T>& v) // trasforma array di qualsiasi tipo in stringa con []
@@ -24,14 +23,6 @@ string ArrayToString(const vector<T>& v) // trasforma array di qualsiasi tipo in
     return toString.str();
 }
 
-struct ClassObj{ // ???
-    double value;
-
-    // bool operator< (const ClassObj& rhs) { return value < rhs.value; }
-};
-
-inline bool operator< (const ClassObj& lhs, const ClassObj& rhs) { return lhs.value < rhs.value; }// ???
-
 
 
 int main(int argc, char *argv[])
@@ -42,7 +33,7 @@ int main(int argc, char *argv[])
         cout << argv[a] << " ";
     cout << endl;
 
-    size_t m = 10; // provare con 10000
+    size_t m = 10;
     if(argc > 1)
     {
         istringstream convert(argv[1]);
@@ -53,44 +44,37 @@ int main(int argc, char *argv[])
         cerr << "use default value: "  << m << endl;
 
     vector<int> v1(m);
-    std::iota(v1.begin(), v1.end(), -4); // l'ultimo argomento è il valore di partenza
+    iota(v1.begin(), v1.end(), -4); // l'ultimo argomento è il valore di partenza
 
-    // cout << "v1: " << endl;
-    // cout << ArrayToString(v1) << endl;
+    cout << "v1: " << endl;
+    cout << ArrayToString(v1) << endl<<endl;
 
     srand(2);
     vector<double> v2(m);
     for(size_t i = 0; i < m; i++)
         v2[i] = rand() / ((double)RAND_MAX); // uniforme interi tra 0 e RAND_MAX (posso dividere per double(RAND_MAX) per riscalare)
 
-    // cout << "v2: " << endl;
-    // cout << ArrayToString(v2) << endl;
+    cout << "v2: " << endl;
+    cout << ArrayToString(v2) << endl<<endl;
 
     vector<int> v3(m, 0);
     for(size_t i = floor(m * 0.5) + 1; i < m; i++)
         v3[i] = rand() % 1000;
 
-    copy(v1.begin(), v1.begin() + floor(m * 0.5) + 1, v3.begin //copio la prima metà di elementi di v3
+    copy(v1.begin(), v1.begin() + floor(m * 0.5) + 1, v3.begin()); //copio la prima metà di elementi di v3
 
-    // cout << "v3: " << endl;
-    // cout << ArrayToString(v3) << endl;
+    cout << "v3: " << endl;
+    cout << ArrayToString(v3) << endl<<endl;
+	
+	
+	vector<string> v4 = {"ci", "ao", "hj", "aia", "ai", "bb"};
+	
+	cout << "v4: " << endl;
+    cout << ArrayToString(v4) << endl<<endl;
 
-
-    // https://www.epochconverter.com/
-    const auto today_time = std::chrono::system_clock::now();
-    std::cout << "Tempo trascorso dal 1 gennaio 1970: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     today_time.time_since_epoch()).count() << endl;
 
 
     unsigned int num_experiment = 100;
-
-    // Try commenting out the overloading of the "<" operator and uncommenting the two lines below:
-    // an error will be reported because ClassObj is not "Sortable"
-
-    // vector<ClassObj> v;
-    // SortLibrary::SelectionSort<ClassObj>(v); // ATTENZIONE: il vettore è non inizializzato -> non eseguire
-
 
 
     double time_elapsed_bubble_v1 = 0.0;
@@ -105,7 +89,7 @@ int main(int argc, char *argv[])
     }
     time_elapsed_bubble_v1 /= num_experiment;
 
-    cout << "Bubble Sort - v1: " << time_elapsed_bubble_v1 << endl;
+    cout << "Bubble Sort - v1: " << setprecision(4)<<time_elapsed_bubble_v1 << endl;
 
 
 
@@ -135,10 +119,27 @@ int main(int argc, char *argv[])
         SortLibrary::BubbleSort<int>(v);
         std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
         time_elapsed_bubble_v3 += std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+		
     }
     time_elapsed_bubble_v3 /= num_experiment;
 
     cout << "Bubble Sort - v3: " << time_elapsed_bubble_v3 << endl;
+	
+	
+	double time_elapsed_bubble_v4 = 0.0;
+    for(unsigned int t = 0; t < num_experiment; t++)
+    {
+        vector<string> v(v4);
+
+        std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+        SortLibrary::BubbleSort<string>(v);
+        std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
+        time_elapsed_bubble_v4 += std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+		
+    }
+    time_elapsed_bubble_v4 /= num_experiment;
+
+    cout << "Bubble Sort - v4: " << time_elapsed_bubble_v4 << endl;
 
 
 
@@ -180,10 +181,29 @@ int main(int argc, char *argv[])
         SortLibrary::HeapSort<int>(v);
         std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
         time_elapsed_heap_v3 += std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+		 
     }
     time_elapsed_heap_v3 /= num_experiment;
 
     cout << "Heap Sort - v3: " << time_elapsed_heap_v3 << endl;
+	
+	 double time_elapsed_heap_v4 = 0.0;
+    for(unsigned int t = 0; t < num_experiment; t++)
+    {
+        vector<string> v(v4);
+
+        std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+        SortLibrary::HeapSort<string>(v);
+        std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
+        time_elapsed_heap_v4 += std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+		 
+    }
+    time_elapsed_heap_v4 /= num_experiment;
+
+    cout << "Heap Sort - v4: " << time_elapsed_heap_v4 << endl;
+	
+	
+
 
 
     return 0;
